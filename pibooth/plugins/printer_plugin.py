@@ -2,6 +2,7 @@
 
 import pibooth
 from pibooth.utils import LOGGER
+from pibooth.printer import Printer
 
 
 class PrinterPlugin(object):
@@ -16,14 +17,22 @@ class PrinterPlugin(object):
 
     def print_picture(self, cfg, app):
         LOGGER.info("Send final picture to printer")
-        app.printer.print_file(app.previous_picture_file,
-                               cfg.getint('PRINTER', 'pictures_per_page'))
+        app.printer.print_file(app.previous_picture_file)
         app.count.printed += 1
         app.count.remaining_duplicates -= 1
 
-    @pibooth.hookimpl
-    def pibooth_cleanup(self, app):
-        app.printer.quit()
+    @pibooth.hookimpl(hookwrapper=True)
+    def pibooth_setup_printer(self, cfg):
+        outcome = yield  # all corresponding hookimpls are invoked here
+        printer = outcome.get_result()
+
+        if not printer:
+            LOGGER.debug("Use pibooth printer management system")
+            printer = Printer(cfg.get('PRINTER', 'printer_name'),
+                              cfg.getint('PRINTER', 'max_pages'),
+                              cfg.gettyped('PRINTER', 'printer_options'))
+
+        outcome.force_result(printer)
 
     @pibooth.hookimpl
     def state_failsafe_enter(self, cfg, app):
@@ -65,3 +74,7 @@ class PrinterPlugin(object):
     def state_print_do(self, cfg, app, events):
         if app.find_print_event(events) and app.previous_picture_file:
             self.print_picture(cfg, app)
+
+    @pibooth.hookimpl
+    def pibooth_cleanup(self, app):
+        app.printer.quit()
