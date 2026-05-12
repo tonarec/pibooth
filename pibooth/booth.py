@@ -60,6 +60,8 @@ class PiApplication(object):
     :type previous_animated: :py:func:`itertools.cycle`
     :attr previous_picture_file: file name of the picture generated during last sequence
     :type previous_picture_file: str
+    :attr copies_to_print: number of copes to send to the printer queue
+    :type copies_to_print: int
     :attr count: holder for counter values
     :type count: :py:class:`pibooth.counters.Counters`
     :attr camera: camera used
@@ -112,6 +114,7 @@ class PiApplication(object):
         self._machine.add_state('capture')
         self._machine.add_state('processing')
         self._machine.add_state('print')
+        self._machine.add_state('copies')
         self._machine.add_state('finish')
 
         # ---------------------------------------------------------------------
@@ -123,6 +126,7 @@ class PiApplication(object):
         self.previous_picture = None
         self.previous_animated = None
         self.previous_picture_file = None
+        self.copies_to_print = None
 
         self.count = Counters(self._config.join_path("counters.pickle"),
                               taken=0, printed=0, forgotten=0,
@@ -301,6 +305,7 @@ class PiApplication(object):
                 return event
         return None
 
+    # TODO: Rework for long-press detection
     def find_capture_event(self, events):
         """Return the first found event if found in the list.
         """

@@ -163,9 +163,23 @@ class ViewPlugin(object):
     def state_print_validate(self, app, win, events):
         printed = app.find_print_event(events)
         self.forgotten = app.find_capture_event(events)
-        if self.print_view_timer.is_timeout() or printed or self.forgotten:
-            if printed:
-                win.set_print_number(len(app.printer.get_all_tasks()), not app.printer.is_ready())
+        if printed:
+            return 'copies'
+        if self.print_view_timer.is_timeout() or self.forgotten:
+            return 'finish'
+    
+    @pibooth.hookimpl
+    def state_copies_enter(self, cfg, app, win):
+        LOGGER.info("Display copies selection")
+        win.show_copies(app.current_copies)
+        win.set_print_number(len(app.printer.get_all_tasks()), not app.printer.is_ready())
+    
+    @pibooth.hookimpl
+    def state_copies_validate(self, app, win, events):
+        copies_printed = app.find_print_event(events)
+        if copies_printed:
+            LOGGER.debug(">>> Print button selected!")
+            win.set_print_number(len(app.printer.get_all_tasks()), not app.printer.is_ready())
             return 'finish'
 
     @pibooth.hookimpl

@@ -291,6 +291,13 @@ class PiWindow(object):
                                                            self.arrow_offset))
         if pil_image:
             self._update_foreground(pil_image, self.LEFT)
+    
+    def show_copies(self, copies_nbr):
+        """Show copies view
+        """
+        LOGGER.debug(">>> Showing copies view")
+        self._capture_number = (0, self._capture_number[1])
+        self._update_background(background.CopiesBackground(copies_nbr))
 
     def show_finished(self, pil_image=None):
         """Show finished view (image resized fullscreen).
@@ -361,6 +368,13 @@ class PiWindow(object):
             if self._current_foreground:
                 self._update_foreground(*self._current_foreground)
             pygame.display.update()
+    
+    def set_copies_number(self, copies_nbr):
+        """Set the current number of copies to send to the printer queue.
+        """
+        if copies_nbr < 1:
+            raise ValueError("Number of copies shall be greater than 0")
+        self._update_background(background.CaptureBackground(copies_nbr))
 
     def toggle_fullscreen(self):
         """Set window to full screen or initial size.

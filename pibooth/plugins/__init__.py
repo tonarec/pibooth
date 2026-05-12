@@ -9,6 +9,7 @@ from pibooth.plugins.camera_plugin import CameraPlugin
 from pibooth.plugins.lights_plugin import LightsPlugin
 from pibooth.plugins.picture_plugin import PicturePlugin
 from pibooth.plugins.printer_plugin import PrinterPlugin
+from pibooth.plugins.copies_plugin import CopiesPlugin
 from pibooth.plugins.view_plugin import ViewPlugin
 
 
@@ -70,6 +71,7 @@ class PiPluginManager(pluggy.PluginManager):
 
         plugins += [LightsPlugin(self),  # Last called
                     ViewPlugin(self),
+                    CopiesPlugin(self),
                     PrinterPlugin(self),
                     PicturePlugin(self),
                     CameraPlugin(self)]  # First called

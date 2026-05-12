@@ -464,6 +464,54 @@ def state_print_exit(cfg, app, win):
     """
 
 
+# --- Copies State ------------------------------------------------------------
+
+
+@hookspec
+def state_copies_enter(cfg, app, win):
+    """Actions performed when application enter in Copies state.
+
+    :param cfg: application configuration
+    :param app: application instance
+    :param win: graphical window instance
+    """
+
+
+@hookspec
+def state_copies_do(cfg, app, win, events):
+    """Actions performed when application is in Copies state.
+    This hook is called in a loop until the application can switch
+    to the next state.
+
+    :param cfg: application configuration
+    :param app: application instance
+    :param win: graphical window instance
+    :param events: pygame events generated since last call
+    """
+
+
+@hookspec(firstresult=True)
+def state_copies_validate(cfg, app, win, events):
+    """Return the next state name if application can switch to it
+    else return None.
+
+    :param cfg: application configuration
+    :param app: application instance
+    :param win: graphical window instance
+    :param events: pygame events generated since last call
+    """
+
+
+@hookspec
+def state_copies_exit(cfg, app, win):
+    """Actions performed when application exit Copies state.
+
+    :param cfg: application configuration
+    :param app: application instance
+    :param win: graphical window instance
+    """
+
+
 # --- Finish State -------------------------------------------------------------
 
 
