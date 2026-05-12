@@ -171,7 +171,7 @@ class ViewPlugin(object):
     @pibooth.hookimpl
     def state_copies_enter(self, cfg, app, win):
         LOGGER.info("Display copies selection")
-        win.show_copies(app.current_copies)
+        win.show_copies(app.copies_to_print)
         win.set_print_number(len(app.printer.get_all_tasks()), not app.printer.is_ready())
     
     @pibooth.hookimpl

@@ -30,7 +30,7 @@ class CopiesPlugin(object):
 
             # TODO: Implement decrease number
             app.copies_to_print += 1
-            app.copies_to_print = max(app.copies_to_print, max_copies)
+            app.copies_to_print = min(app.copies_to_print, max_copies)
             LOGGER.debug(">>> New copies number: %d", app.copies_to_print)
 
             win.set_copies_number(app.copies_to_print)

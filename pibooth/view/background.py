@@ -5,6 +5,7 @@ import pygame
 
 from pibooth import fonts, pictures
 from pibooth.language import get_translated_text
+from pibooth.utils import LOGGER
 
 ARROW_TOP = 'top'
 ARROW_BOTTOM = 'bottom'
@@ -216,7 +217,8 @@ class IntroBackground(Background):
                 size = (self._rect.width * 0.3, self._rect.height * 0.3)
 
                 vflip = True if self.arrow_location == ARROW_TOP else False
-                self.left_arrow = pictures.get_pygame_image("arrow.png", size, vflip=vflip, color=self._text_color)
+                self.left_arrow = pictures.get_pygame_image(
+                    "arrow.png", size, vflip=vflip, color=self._text_color)
 
                 x = int(self._rect.left + self._rect.width // 4
                         - self.left_arrow.get_rect().width // 2)
@@ -587,7 +589,7 @@ class PrintBackground(Background):
 
 class CopiesBackground(Background):
 
-    def __init__(self, arrow_location=ARROW_BOTTOM, arrow_offset=0):
+    def __init__(self, copies_nbr, arrow_location=ARROW_BOTTOM, arrow_offset=0):
         Background.__init__(self, "copies")
         self.arrow_location = arrow_location
         self.arrow_offset = arrow_offset
@@ -595,6 +597,7 @@ class CopiesBackground(Background):
         self.left_arrow_pos = None
         self.right_arrow = None
         self.right_arrow_pos = None
+        self.copies_nbr = copies_nbr
 
     def resize(self, screen):
         Background.resize(self, screen)
@@ -614,10 +617,10 @@ class CopiesBackground(Background):
                 self.left_arrow = pictures.get_pygame_image("arrow.png", size, vflip=vflip, hflip=False, color=self._text_color)
                 self.right_arrow = pictures.get_pygame_image("arrow.png", size, vflip=vflip, hflip=True, color=self._text_color)
 
-                xl = int(self._rect.left + self._rect.width // 4
+                xl = int(self._rect.left + self._rect.width * 0.25
                          - self.left_arrow.get_rect().width // 2)
                 xr = int(self._rect.left + self._rect.width * 0.75
-                         + self.right_arrow.get_rect().width // 2)
+                         - self.right_arrow.get_rect().width // 2)
 
                 if self.arrow_location == ARROW_TOP:
                     y = self._rect.top + 10
@@ -637,22 +640,28 @@ class CopiesBackground(Background):
         text_select = get_translated_text("copies_select")
         text_print = get_translated_text("copies_print")
         if text_select and text_print:
-            left_rect = pygame.Rect(self._text_border, self._text_border,
-                                    self._rect.width / 2 - 2 * self._text_border,
-                                    self._rect.height * 0.6 - self._text_border)
-            right_rect = pygame.Rect(self._rect.width / 2 + self._text_border, self._text_border,
-                                     self._rect.width / 2 - 2 * self._text_border,
-                                     self._rect.height * 0.6 - self._text_border)
-            if self.arrow_location == ARROW_TOP:
-                left_rect.top = self._rect.height * 0.08
-                right_rect.top = self._rect.height * 0.08
-                align = 'top-center'
+            text_height = int(self._rect.height * 0.10)
+            if self.arrow_location == ARROW_BOTTOM:
+                left_rect = pygame.Rect(self._text_border,
+                                        self._rect.height * 0.55,
+                                        self._rect.width / 2 - 2 * self._text_border,
+                                        text_height)
+                right_rect = pygame.Rect(self._rect.width / 2 + self._text_border,
+                                         self._rect.height * 0.55,
+                                         self._rect.width / 2 - 2 * self._text_border,
+                                         text_height)
             else:
-                left_rect.bottom = self._rect.height - self._rect.height * 0.08
-                right_rect.bottom = self._rect.height - self._rect.height * 0.08
-                align = 'bottom-center'
-            self._write_text(text_select, left_rect, align)
-            self._write_text(text_print, right_rect, align)
+                raise NotImplementedError("Arrow location other than 'bottom' not supported yet!")
+            self._write_text(text_select, left_rect)
+            self._write_text(text_print, right_rect)
+
+        # FIXME: To be used in foreground update mechanism
+        text_copies = str(self.copies_nbr)
+        copies_rect = pygame.Rect(self._rect.width * 0.25,
+                                  self._rect.height * 0.25,
+                                  self._rect.width * 0.5,
+                                  self._rect.height * 0.5)
+        self._write_text(text_copies, copies_rect)
 
     def paint(self, screen):
         Background.paint(self, screen)

@@ -297,7 +297,7 @@ class PiWindow(object):
         """
         LOGGER.debug(">>> Showing copies view")
         self._capture_number = (0, self._capture_number[1])
-        self._update_background(background.CopiesBackground(copies_nbr))
+        self._update_background(background.CopiesBackground(copies_nbr, self.arrow_location, self.arrow_offset))
 
     def show_finished(self, pil_image=None):
         """Show finished view (image resized fullscreen).
@@ -374,7 +374,8 @@ class PiWindow(object):
         """
         if copies_nbr < 1:
             raise ValueError("Number of copies shall be greater than 0")
-        self._update_background(background.CaptureBackground(copies_nbr))
+        # FIXME: Use foreground mechanism instead for better performance
+        self._update_background(background.CopiesBackground(copies_nbr, self.arrow_location, self.arrow_offset))
 
     def toggle_fullscreen(self):
         """Set window to full screen or initial size.
