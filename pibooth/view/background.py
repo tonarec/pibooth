@@ -589,7 +589,7 @@ class PrintBackground(Background):
 
 class CopiesBackground(Background):
 
-    def __init__(self, copies_nbr, arrow_location=ARROW_BOTTOM, arrow_offset=0):
+    def __init__(self, arrow_location=ARROW_BOTTOM, arrow_offset=0):
         Background.__init__(self, "copies")
         self.arrow_location = arrow_location
         self.arrow_offset = arrow_offset
@@ -597,7 +597,6 @@ class CopiesBackground(Background):
         self.left_arrow_pos = None
         self.right_arrow = None
         self.right_arrow_pos = None
-        self.copies_nbr = copies_nbr
 
     def resize(self, screen):
         Background.resize(self, screen)
@@ -654,14 +653,6 @@ class CopiesBackground(Background):
                 raise NotImplementedError("Arrow location other than 'bottom' not supported yet!")
             self._write_text(text_select, left_rect)
             self._write_text(text_print, right_rect)
-
-        # FIXME: To be used in foreground update mechanism
-        text_copies = str(self.copies_nbr)
-        copies_rect = pygame.Rect(self._rect.width * 0.25,
-                                  self._rect.height * 0.25,
-                                  self._rect.width * 0.5,
-                                  self._rect.height * 0.5)
-        self._write_text(text_copies, copies_rect)
 
     def paint(self, screen):
         Background.paint(self, screen)

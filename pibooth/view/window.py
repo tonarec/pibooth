@@ -292,12 +292,12 @@ class PiWindow(object):
         if pil_image:
             self._update_foreground(pil_image, self.LEFT)
     
-    def show_copies(self, copies_nbr):
+    def show_copies(self):
         """Show copies view
         """
         LOGGER.debug(">>> Showing copies view")
         self._capture_number = (0, self._capture_number[1])
-        self._update_background(background.CopiesBackground(copies_nbr, self.arrow_location, self.arrow_offset))
+        self._update_background(background.CopiesBackground(self.arrow_location, self.arrow_offset))
 
     def show_finished(self, pil_image=None):
         """Show finished view (image resized fullscreen).
@@ -374,8 +374,15 @@ class PiWindow(object):
         """
         if copies_nbr < 1:
             raise ValueError("Number of copies shall be greater than 0")
-        # FIXME: Use foreground mechanism instead for better performance
-        self._update_background(background.CopiesBackground(copies_nbr, self.arrow_location, self.arrow_offset))
+        
+        self._update_background(background.CopiesBackground(self.arrow_location, self.arrow_offset))
+
+        text = str(copies_nbr)
+        win_rect = self.get_rect()
+        font = fonts.get_pygame_font(text, fonts.CURRENT, win_rect.width * 0.5, win_rect.height * 0.5)
+        text_surface = font.render(text, True, self.text_color)
+        self.surface.blit(text_surface, text_surface.get_rect(center=win_rect.center).topleft)
+        pygame.display.update()
 
     def toggle_fullscreen(self):
         """Set window to full screen or initial size.
