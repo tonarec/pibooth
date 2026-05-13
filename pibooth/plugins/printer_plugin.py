@@ -15,11 +15,13 @@ class PrinterPlugin(object):
         self._pm = plugin_manager
 
     def print_picture(self, cfg, app):
-        LOGGER.info("Send final picture to printer")
-        app.printer.print_file(app.previous_picture_file,
-                               cfg.getint('PRINTER', 'pictures_per_page'))
-        app.count.printed += 1
-        app.count.remaining_duplicates -= 1
+        copies_nbr = app.copies_to_print
+        LOGGER.info("Send final picture to printer with %d copie(s)", copies_nbr)
+        for _ in range(0, copies_nbr):
+            app.printer.print_file(app.previous_picture_file,
+                                   cfg.getint('PRINTER', 'pictures_per_page'))
+            app.count.printed += 1
+            app.count.remaining_duplicates -= 1
 
     @pibooth.hookimpl
     def pibooth_cleanup(self, app):
@@ -62,6 +64,6 @@ class PrinterPlugin(object):
                     self.print_picture(cfg, app)
 
     @pibooth.hookimpl
-    def state_print_do(self, cfg, app, events):
-        if app.find_print_event(events) and app.previous_picture_file:
+    def state_copies_exit(self, cfg, app, win):
+        if app.copies_to_print and app.previous_picture_file:
             self.print_picture(cfg, app)
